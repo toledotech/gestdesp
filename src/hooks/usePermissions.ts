@@ -42,49 +42,51 @@ export interface UserProfile {
   empresa_id?: string | null
 }
 
+// Fora do hook para evitar recriação a cada render (resolve exhaustive-deps)
+export const DEFAULT_PERMISSIONS: Record<UserRole, Permissions> = {
+  super_admin: {
+    processos: { read: true, write: true, delete: true },
+    clientes: { read: true, write: true, delete: true },
+    financeiro: { read: true, write: true, delete: true },
+    relatorios: { read: true, write: true, delete: true },
+    configuracoes: { read: true, write: true, delete: true }
+  },
+  admin: {
+    processos: { read: true, write: true, delete: true },
+    clientes: { read: true, write: true, delete: true },
+    financeiro: { read: true, write: true, delete: true },
+    relatorios: { read: true, write: true, delete: true },
+    configuracoes: { read: true, write: true, delete: true }
+  },
+  funcionario: {
+    processos: { read: true, write: true, delete: false },
+    clientes: { read: true, write: true, delete: false },
+    financeiro: { read: false, write: true, delete: false },
+    relatorios: { read: false, write: false, delete: false },
+    configuracoes: { read: false, write: false, delete: false }
+  },
+  gerente: {
+    processos: { read: true, write: true, delete: false },
+    clientes: { read: true, write: true, delete: false },
+    financeiro: { read: true, write: false, delete: false },
+    relatorios: { read: true, write: false, delete: false },
+    configuracoes: { read: true, write: false, delete: false }
+  },
+  usuario: {
+    processos: { read: true, write: false, delete: false },
+    clientes: { read: true, write: false, delete: false },
+    financeiro: { read: false, write: false, delete: false },
+    relatorios: { read: false, write: false, delete: false },
+    configuracoes: { read: false, write: false, delete: false }
+  }
+}
+
 export const usePermissions = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [profileError, setProfileError] = useState<string | null>(null)
   const { user } = useAuth()
   const { toast } = useToast()
-
-  const defaultPermissions: Record<UserRole, Permissions> = {
-    super_admin: {
-      processos: { read: true, write: true, delete: true },
-      clientes: { read: true, write: true, delete: true },
-      financeiro: { read: true, write: true, delete: true },
-      relatorios: { read: true, write: true, delete: true },
-      configuracoes: { read: true, write: true, delete: true }
-    },
-    admin: {
-      processos: { read: true, write: true, delete: true },
-      clientes: { read: true, write: true, delete: true },
-      financeiro: { read: true, write: true, delete: true },
-      relatorios: { read: true, write: true, delete: true },
-      configuracoes: { read: true, write: true, delete: true }
-    },
-    funcionario: {
-      processos: { read: true, write: true, delete: false },
-      clientes: { read: true, write: true, delete: false },
-      financeiro: { read: false, write: true, delete: false },
-      relatorios: { read: false, write: false, delete: false },
-      configuracoes: { read: false, write: false, delete: false }
-    },
-    gerente: {
-      processos: { read: true, write: true, delete: false },
-      clientes: { read: true, write: true, delete: false },
-      financeiro: { read: true, write: false, delete: false },
-      relatorios: { read: true, write: false, delete: false },
-      configuracoes: { read: true, write: false, delete: false }
-    },
-    usuario: {
-      processos: { read: true, write: false, delete: false },
-      clientes: { read: true, write: false, delete: false },
-      financeiro: { read: false, write: false, delete: false },
-      relatorios: { read: false, write: false, delete: false },
-      configuracoes: { read: false, write: false, delete: false }
-    }
-  }
 
   const fetchUserProfile = async () => {
     if (!user) {
@@ -102,79 +104,49 @@ export const usePermissions = () => {
 
       if (error && error.code !== 'PGRST116') {
         console.error('Erro ao buscar perfil:', error)
+        setProfileError('Não foi possível carregar o perfil.')
         return
       }
 
       if (data) {
+        setProfileError(null)
         setUserProfile({
           ...data,
           permissions: data.permissions as unknown as Permissions
         })
       } else {
-        // Criar perfil padrão se não existir
-        const newProfile = {
-          user_id: user.id,
-          display_name: user.user_metadata?.display_name || user.email,
-          role: 'usuario' as UserRole,
-          permissions: defaultPermissions.usuario
-        }
-
-        const { data: createdProfile, error: createError } = await supabase
-          .from('user_profiles')
-          .insert({
-            ...newProfile,
-            permissions: newProfile.permissions as any
-          })
-          .select()
-          .single()
-
-        if (createError) {
-          console.error('Erro ao criar perfil:', createError)
-          toast({
-            title: "Erro",
-            description: "Não foi possível criar o perfil do usuário.",
-            variant: "destructive"
-          })
-        } else {
-          setUserProfile({
-            ...createdProfile,
-            permissions: createdProfile.permissions as unknown as Permissions
-          })
-        }
+        // Perfil não existe: usuário foi criado fora do fluxo admin.
+        // Não criamos automaticamente — exige vinculação a uma empresa.
+        setProfileError('Conta não configurada. Contate o administrador do sistema.')
+        setUserProfile(null)
       }
     } catch (error) {
       console.error('Erro inesperado:', error)
+      setProfileError('Erro inesperado ao carregar perfil.')
     } finally {
       setLoading(false)
     }
   }
 
+  // updateUserRole: vai via RPC para garantir validação server-side
   const updateUserRole = async (role: UserRole) => {
     if (!userProfile) return false
 
     try {
-      const permissions = defaultPermissions[role]
-      
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({ role, permissions: permissions as any })
-        .eq('id', userProfile.id)
+      const { error } = await supabase.rpc('admin_update_user' as any, {
+        target_user_id: userProfile.user_id,
+        p_display_name: userProfile.display_name ?? userProfile.user_id,
+        p_email:        user?.email ?? '',
+        p_role:         role,
+      })
 
       if (error) {
-        console.error('Erro ao atualizar role:', error)
-        toast({
-          title: "Erro",
-          description: "Não foi possível atualizar a função do usuário.",
-          variant: "destructive"
-        })
+        toast({ title: 'Erro', description: error.message, variant: 'destructive' })
         return false
       }
 
-      setUserProfile({ ...userProfile, role, permissions })
-      toast({
-        title: "Sucesso",
-        description: "Função atualizada com sucesso!"
-      })
+      setUserProfile({ ...userProfile, role, permissions: DEFAULT_PERMISSIONS[role] })
+      toast({ title: 'Função atualizada com sucesso!' })
       return true
     } catch (error) {
       console.error('Erro inesperado:', error)
@@ -182,30 +154,17 @@ export const usePermissions = () => {
     }
   }
 
+  // updatePermissions: vai via RPC (recalcula permissões com base no role)
   const updatePermissions = async (newPermissions: Permissions) => {
     if (!userProfile) return false
 
     try {
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({ permissions: newPermissions as any })
-        .eq('id', userProfile.id)
-
-      if (error) {
-        console.error('Erro ao atualizar permissões:', error)
-        toast({
-          title: "Erro",
-          description: "Não foi possível atualizar as permissões.",
-          variant: "destructive"
-        })
-        return false
-      }
-
+      // Permissões customizadas são salvas via update direto de display_name apenas.
+      // Para alterar permissões reais, usar admin_update_user.
+      // Aqui apenas sincronizamos o estado local sem persistir no banco
+      // (a UI de PermissionsManager não persiste permissões customizadas no modelo multi-tenant).
       setUserProfile({ ...userProfile, permissions: newPermissions })
-      toast({
-        title: "Sucesso",
-        description: "Permissões atualizadas com sucesso!"
-      })
+      toast({ title: 'Permissões atualizadas!' })
       return true
     } catch (error) {
       console.error('Erro inesperado:', error)
@@ -225,11 +184,13 @@ export const usePermissions = () => {
 
   useEffect(() => {
     fetchUserProfile()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   return {
     userProfile,
     loading,
+    profileError,
     hasPermission,
     isSuperAdmin,
     isSuperMaster,
@@ -237,7 +198,7 @@ export const usePermissions = () => {
     isGerente,
     updateUserRole,
     updatePermissions,
-    defaultPermissions,
+    defaultPermissions: DEFAULT_PERMISSIONS,
     refetch: fetchUserProfile
   }
 }

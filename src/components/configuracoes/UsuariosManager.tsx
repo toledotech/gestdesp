@@ -84,21 +84,13 @@ function NovoUsuarioModal({ open, onOpenChange, onCreated }: NovoUsuarioModalPro
     }
     setLoading(true)
     try {
-      const { data: newUserId, error } = await supabase.rpc('admin_create_user', {
-        p_email:    form.email.trim().toLowerCase(),
-        p_password: form.password,
-        p_role:     form.role,
+      const { error } = await supabase.rpc('admin_create_user' as any, {
+        p_email:        form.email.trim().toLowerCase(),
+        p_password:     form.password,
+        p_role:         form.role,
+        p_display_name: form.display_name.trim() || null,
       })
       if (error) throw error
-
-      if (form.display_name.trim() && newUserId) {
-        await supabase.rpc('admin_update_user', {
-          target_user_id: newUserId,
-          p_display_name: form.display_name.trim(),
-          p_email:        form.email.trim().toLowerCase(),
-          p_role:         form.role,
-        })
-      }
 
       toast({ title: 'Usuário criado com sucesso!' })
       onOpenChange(false)

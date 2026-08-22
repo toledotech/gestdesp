@@ -106,7 +106,7 @@ function EmpresaModal({ open, onClose, empresa, onSave }: EmpresaModalProps) {
           {!isEdicao && (
             <>
               <div className="border-t pt-4">
-                <p className="text-sm font-medium text-gray-700 mb-3">Usuário Administrador (opcional)</p>
+                <p className="text-sm font-medium text-foreground mb-3">Usuário Administrador (opcional)</p>
                 <div className="space-y-3">
                   <div className="space-y-1">
                     <Label htmlFor="adminNome">Nome</Label>
@@ -168,6 +168,7 @@ function UsuariosModal({ open, onClose, empresa, fetchUsers, addUser }: Usuarios
         .finally(() => setLoading(false))
     }
     if (!open) { setShowAdd(false); setEmail(''); setSenha(''); setNome(''); setRole('admin') }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, empresa])
 
   const handleAdd = async (e: React.FormEvent) => {
@@ -209,7 +210,7 @@ function UsuariosModal({ open, onClose, empresa, fetchUsers, addUser }: Usuarios
           <div className="space-y-2 max-h-72 overflow-y-auto">
             {users.length === 0 && <p className="text-sm text-gray-500 text-center py-4">Nenhum usuário cadastrado.</p>}
             {users.map(u => (
-              <div key={u.user_id} className="flex items-center justify-between p-3 rounded-lg border bg-gray-50">
+              <div key={u.user_id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/40">
                 <div>
                   <p className="font-medium text-sm">{u.display_name || u.email}</p>
                   <p className="text-xs text-gray-500">{u.email}</p>
@@ -285,6 +286,7 @@ export default function AdminPanel() {
     if (!permLoading && isSuperAdmin()) {
       fetchEmpresas()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [permLoading])
 
   if (permLoading) return null

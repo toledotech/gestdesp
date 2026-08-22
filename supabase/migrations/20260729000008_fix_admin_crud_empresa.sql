@@ -36,14 +36,14 @@ BEGIN
     RAISE EXCEPTION 'Acesso negado: usuário pertence a outra empresa';
   END IF;
 
-  -- Admin não pode editar outros admins ou super_admins
-  IF v_caller_role = 'admin' AND v_target_role NOT IN ('funcionario', 'gerente', 'usuario') THEN
-    RAISE EXCEPTION 'Administradores só podem editar funcionários e gerentes';
+  -- Admin não pode editar super_admins
+  IF v_caller_role = 'admin' AND v_target_role = 'super_admin' THEN
+    RAISE EXCEPTION 'Administradores não podem editar o Super Admin';
   END IF;
 
-  -- Admin só pode atribuir funcionario ou gerente
-  IF v_caller_role = 'admin' AND p_role NOT IN ('funcionario', 'gerente', 'usuario') THEN
-    RAISE EXCEPTION 'Administradores só podem atribuir os perfis Funcionário ou Gerente';
+  -- Admin só pode atribuir funcionario, gerente ou admin
+  IF v_caller_role = 'admin' AND p_role = 'super_admin' THEN
+    RAISE EXCEPTION 'Administradores não podem atribuir o perfil Super Admin';
   END IF;
 
   IF p_role IN ('super_admin', 'admin') THEN
