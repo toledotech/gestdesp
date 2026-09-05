@@ -107,7 +107,7 @@ const Configuracoes = () => {
         celular: configuracoes.celular || '',
         email: configuracoes.email || '',
         site: configuracoes.site || '',
-        cor_tema: configuracoes.cor_tema,
+        cor_tema: configuracoes.cor_tema ?? '#2563eb',
       })
       setNotificacoes(configuracoes.configuracoes_notificacao)
       setSistemaConfig(configuracoes.configuracoes_sistema)
@@ -378,7 +378,7 @@ const Configuracoes = () => {
                     </CardHeader>
                     <CardContent>
                       <UploadLogo
-                        logoUrl={configuracoes?.logo_url}
+                        logoUrl={configuracoes?.logo_url ?? undefined}
                         onLogoChange={handleLogoChange}
                         onLogoRemove={handleLogoRemove}
                       />

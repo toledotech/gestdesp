@@ -13,7 +13,7 @@ import {
   Loader2
 } from "lucide-react"
 import { useDashboard } from "@/hooks/useDashboard"
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "@tanstack/react-router"
 
 const Dashboard = () => {
   const { stats, loading } = useDashboard()
@@ -125,7 +125,7 @@ const Dashboard = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {stats.processosRecentes.filter(p => p.vencido || new Date(p.prazo) <= new Date()).slice(0, 3).map((processo, index) => (
+            {stats.processosRecentes.filter(p => p.vencido || new Date(p.prazo ?? "") <= new Date()).slice(0, 3).map((processo, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                 <div>
                   <p className="font-medium">{processo.cliente_nome}</p>
@@ -143,12 +143,12 @@ const Dashboard = () => {
                 </div>
               </div>
             ))}
-            {stats.processosRecentes.filter(p => p.vencido || new Date(p.prazo) <= new Date()).length === 0 && (
+            {stats.processosRecentes.filter(p => p.vencido || new Date(p.prazo ?? "") <= new Date()).length === 0 && (
               <div className="text-center py-8 text-muted-foreground text-sm">
                 Nenhum prazo crítico hoje! 🎉
               </div>
             )}
-            <Button className="w-full" variant="outline" onClick={() => navigate('/prazos')}>
+            <Button className="w-full" variant="outline" onClick={() => navigate({ to: '/prazos' })}>
               Ver Todos os Prazos
             </Button>
           </CardContent>
@@ -197,7 +197,7 @@ const Dashboard = () => {
                 Nenhum atendimento agendado para hoje
               </div>
             )}
-            <Button className="w-full" variant="outline" onClick={() => navigate('/agenda')}>
+            <Button className="w-full" variant="outline" onClick={() => navigate({ to: '/agenda' })}>
               Ver Agenda Completa
             </Button>
           </CardContent>

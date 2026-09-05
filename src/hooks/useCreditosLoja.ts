@@ -9,7 +9,7 @@ export interface CreditoLoja {
   id: string
   user_id: string
   loja_id: string
-  processo_id?: string
+  processo_id?: string | null
   tipo: TipoCredito
   descricao: string
   valor: number
@@ -56,7 +56,7 @@ export const useCreditosLoja = (loja_id?: string) => {
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      setLancamentos(data || [])
+      setLancamentos((data || []) as CreditoLoja[])
     } catch (err: any) {
       toast({ title: 'Erro ao carregar lançamentos', description: err.message, variant: 'destructive' })
     } finally {
@@ -74,7 +74,7 @@ export const useCreditosLoja = (loja_id?: string) => {
           loja_id,
           user_id: user.id,
           processo_id: dados.processo_id || null,
-        }])
+        }] as any)
         .select()
         .single()
 

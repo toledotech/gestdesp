@@ -5,13 +5,13 @@ import { useToast } from '@/hooks/use-toast'
 export interface Cliente {
   id: string
   nome: string
-  cpf_cnpj?: string
-  email?: string
-  telefone?: string
-  endereco?: string
-  cep?: string
-  cidade?: string
-  uf?: string
+  cpf_cnpj?: string | null
+  email?: string | null
+  telefone?: string | null
+  endereco?: string | null
+  cep?: string | null
+  cidade?: string | null
+  uf?: string | null
   user_id: string
   created_at: string
   updated_at: string
@@ -67,7 +67,7 @@ export function useClientes() {
 
       const { data, error } = await supabase
         .from('clientes')
-        .insert([{ ...clienteData, user_id: user.data.user.id }])
+        .insert([{ ...clienteData, user_id: user.data.user.id }] as any)
         .select()
         .single()
 

@@ -30,3 +30,9 @@ dist-ssr
 public/analise-concorrentes.html
 supabase/.temp/
 
+# TanStack Router (auto-gerado)
+src/routeTree.gen.ts
+.output
+.nitro
+.tanstack
+

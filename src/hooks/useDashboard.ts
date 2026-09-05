@@ -12,7 +12,7 @@ export interface DashboardStats {
     id: string
     cliente_nome: string
     servico: string
-    prazo: string
+    prazo: string | null
     status: ProcessoStatus
     vencido: boolean
   }>
@@ -69,7 +69,7 @@ export const useDashboard = () => {
       
       // Processos críticos (prazo hoje ou vencido)
       const processosCriticos = processosArray.filter(p => {
-        const prazo = new Date(p.prazo)
+        const prazo = new Date(p.prazo ?? '')
         return prazo <= amanha && p.status !== 'Concluído'
       }).length
 
@@ -89,7 +89,7 @@ export const useDashboard = () => {
         servico: p.servico,
         prazo: p.prazo,
         status: p.status,
-        vencido: new Date(p.prazo) < hoje && p.status !== 'Concluído'
+        vencido: new Date(p.prazo ?? '') < hoje && p.status !== 'Concluído'
       }))
 
       // Contagem por status

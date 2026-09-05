@@ -46,7 +46,7 @@ export const ProcessoCard = ({
 
   const isPrazoVencido = () => {
     const hoje = new Date()
-    const prazo = new Date(processo.prazo)
+    const prazo = new Date(processo.prazo ?? '')
     return prazo < hoje && processo.status !== 'Concluído'
   }
 
@@ -156,7 +156,7 @@ export const ProcessoCard = ({
               {formatCurrency(processo.valor)}
             </span>
             <span className={`text-xs ${isPrazoVencido() ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
-              {formatDate(processo.prazo)}
+              {formatDate(processo.prazo ?? '')}
             </span>
           </div>
 

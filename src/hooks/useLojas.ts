@@ -8,11 +8,11 @@ export interface Loja {
   user_id: string
   nome: string
   tipo: string
-  cnpj?: string
-  telefone?: string
-  email?: string
-  contato?: string
-  observacoes?: string
+  cnpj?: string | null
+  telefone?: string | null
+  email?: string | null
+  contato?: string | null
+  observacoes?: string | null
   ativo: boolean
   created_at: string
   updated_at: string
@@ -75,7 +75,7 @@ export const useLojas = () => {
     try {
       const { data, error } = await supabase
         .from('lojas')
-        .insert([{ ...dados, user_id: user.id }])
+        .insert([{ ...dados, user_id: user.id }] as any)
         .select()
         .single()
 

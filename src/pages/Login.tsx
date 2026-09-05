@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "@tanstack/react-router"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -24,7 +24,7 @@ const Login = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (user) {
-      navigate('/', { replace: true })
+      navigate({ to: '/', replace: true })
     }
   }, [user, navigate])
 
@@ -32,7 +32,7 @@ const Login = () => {
     e.preventDefault()
     const { error } = await signIn(email, password)
     if (!error) {
-      navigate('/', { replace: true })
+      navigate({ to: '/', replace: true })
     }
   }
 

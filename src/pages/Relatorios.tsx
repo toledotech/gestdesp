@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "@tanstack/react-router"
 import { RelatoriosHeader } from "@/components/relatorios/RelatoriosHeader"
 import { ProcessosPeriodoChart } from "@/components/relatorios/ProcessosPeriodoChart"
 import { ProcessosPeriodoTable } from "@/components/relatorios/ProcessosPeriodoTable"
@@ -53,7 +53,7 @@ const RelatorioBloqueado = ({ titulo, planoMinimo }: BloqueadoProps) => {
           <span className="text-muted-foreground text-sm">→</span>
           <Badge className="bg-primary">{planoMinimo} ou superior</Badge>
         </div>
-        <Button onClick={() => navigate('/assinatura')} className="mt-2 gap-2">
+        <Button onClick={() => navigate({ to: '/assinatura' })} className="mt-2 gap-2">
           <TrendingUp className="h-4 w-4" />
           Ver planos disponíveis
         </Button>

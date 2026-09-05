@@ -36,7 +36,7 @@ export interface Permissions {
 export interface UserProfile {
   id: string
   user_id: string
-  display_name?: string
+  display_name?: string | null
   role: UserRole
   permissions: Permissions
   empresa_id?: string | null

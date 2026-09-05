@@ -8,10 +8,21 @@ const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-  auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
-  }
+function createSupabaseClient() {
+  return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+    auth: {
+      storage: typeof window !== "undefined" ? localStorage : undefined,
+      persistSession: true,
+      autoRefreshToken: true,
+    },
+  });
+}
+
+let _supabase: ReturnType<typeof createSupabaseClient> | undefined;
+
+export const supabase = new Proxy({} as ReturnType<typeof createSupabaseClient>, {
+  get(_, prop, receiver) {
+    if (!_supabase) _supabase = createSupabaseClient();
+    return Reflect.get(_supabase, prop, receiver);
+  },
 });

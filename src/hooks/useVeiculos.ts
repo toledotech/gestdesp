@@ -8,11 +8,11 @@ export interface Veiculo {
   placa: string
   marca: string
   modelo: string
-  ano?: number
-  chassi?: string
-  renavam?: string
-  cliente_id?: string
-  cliente_nome?: string
+  ano?: number | null
+  chassi?: string | null
+  renavam?: string | null
+  cliente_id?: string | null
+  cliente_nome?: string | null
   user_id: string
   created_at: string
   updated_at: string
@@ -89,7 +89,7 @@ export const useVeiculos = () => {
         .insert([{
           ...dados,
           user_id: user.id
-        }])
+        }] as any)
         .select()
         .single()
 

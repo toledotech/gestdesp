@@ -55,7 +55,7 @@ export const SubscriptionPlans = () => {
                 <CardDescription>{plan.description}</CardDescription>
                 <div className="mt-4">
                   <span className="text-3xl font-bold">
-                    {formatPrice(plan.price_cents, plan.currency)}
+                    {formatPrice(plan.price_cents, plan.currency ?? 'BRL')}
                   </span>
                   <span className="text-muted-foreground">
                     /{plan.interval_type === 'month' ? 'mês' : 'ano'}

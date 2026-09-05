@@ -11,20 +11,20 @@ export interface ConfiguracoesEmpresa {
   id?: string
   user_id: string
   nome_empresa: string
-  cnpj?: string
-  razao_social?: string
-  inscricao_estadual?: string
-  inscricao_municipal?: string
-  endereco?: string
-  cidade?: string
-  estado?: string
-  cep?: string
-  telefone?: string
-  celular?: string
-  email?: string
-  site?: string
-  logo_url?: string
-  cor_tema: string
+  cnpj?: string | null
+  razao_social?: string | null
+  inscricao_estadual?: string | null
+  inscricao_municipal?: string | null
+  endereco?: string | null
+  cidade?: string | null
+  estado?: string | null
+  cep?: string | null
+  telefone?: string | null
+  celular?: string | null
+  email?: string | null
+  site?: string | null
+  logo_url?: string | null
+  cor_tema: string | null
   configuracoes_notificacao: {
     email_processos: boolean
     email_prazos: boolean

@@ -69,7 +69,7 @@ export function useAgenda() {
       let prazosHoje = 0
 
       processos?.forEach((processo) => {
-        const prazoDifference = differenceInDays(parseISO(processo.prazo), hoje)
+        const prazoDifference = differenceInDays(parseISO(processo.prazo ?? ''), hoje)
         const isCritico = prazoDifference <= 3 && prazoDifference >= 0
         const isVencido = prazoDifference < 0
         const isHoje = prazoDifference === 0
@@ -81,7 +81,7 @@ export function useAgenda() {
         agendaItems.push({
           id: processo.id,
           numeroProtocolo: processo.numero_protocolo,
-          prazo: processo.prazo,
+          prazo: processo.prazo ?? '',
           clienteNome: processo.clientes?.nome || 'Cliente não informado',
           veiculoPlaca: processo.veiculos?.placa || 'Placa não informada',
           servico: processo.servico,
@@ -89,7 +89,7 @@ export function useAgenda() {
           valor: Number(processo.valor),
           diasRestantes: prazoDifference,
           isCritico,
-          observacoes: processo.observacoes
+          observacoes: processo.observacoes ?? undefined
         })
       })
 

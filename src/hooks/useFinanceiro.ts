@@ -161,7 +161,7 @@ export const useFinanceiro = () => {
         .insert([{
           ...dados,
           user_id: user.id
-        }])
+        }] as any)
         .select()
         .single()
 

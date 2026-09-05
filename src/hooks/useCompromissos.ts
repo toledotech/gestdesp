@@ -7,9 +7,9 @@ import { format } from 'date-fns'
 export interface Compromisso {
   id: string
   titulo: string
-  descricao?: string
+  descricao?: string | null
   data_hora: string
-  cliente_id?: string
+  cliente_id?: string | null
   cliente?: { nome: string } | null
   tipo: string
   status: string
@@ -52,7 +52,7 @@ export const useCompromissos = () => {
     try {
       const { data, error } = await supabase
         .from('compromissos')
-        .insert([{ ...dados, user_id: user.id }])
+        .insert([{ ...dados, user_id: user.id }] as any)
         .select('*, cliente:clientes(nome)')
         .single()
 

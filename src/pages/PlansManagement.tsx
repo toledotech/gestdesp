@@ -20,10 +20,10 @@ interface Plan {
   name: string
   description: string | null
   price_cents: number
-  currency: string
-  interval_type: string
+  currency: string | null
+  interval_type: string | null
   features: any
-  is_active: boolean
+  is_active: boolean | null
   is_public: boolean
 }
 
@@ -152,10 +152,10 @@ const PlansManagement = () => {
       name: plan.name,
       description: plan.description || '',
       price_cents: plan.price_cents,
-      currency: plan.currency,
-      interval_type: plan.interval_type,
+      currency: plan.currency ?? 'BRL',
+      interval_type: plan.interval_type ?? 'month',
       features: plan.features.length > 0 ? plan.features : [''],
-      is_active: plan.is_active,
+      is_active: plan.is_active ?? true,
       is_public: plan.is_public,
     })
     setIsDialogOpen(true)
@@ -447,7 +447,7 @@ const PlansManagement = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-2xl font-bold">
-                      {formatPrice(plan.price_cents, plan.currency)}
+                      {formatPrice(plan.price_cents, plan.currency ?? 'BRL')}
                     </span>
                     <span className="text-muted-foreground">
                       /{plan.interval_type === 'month' ? 'mês' : 'ano'}

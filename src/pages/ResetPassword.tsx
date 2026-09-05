@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "@tanstack/react-router"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -26,14 +26,14 @@ const ResetPassword = () => {
 
     // Se não há token de recovery e nenhum usuário autenticado, redireciona para login
     if (!accessToken && !type && !loading && !user) {
-      navigate('/login', { replace: true })
+      navigate({ to: '/login', replace: true })
     }
   }, [loading, user, navigate])
 
   // Redireciona para home SOMENTE após atualização bem-sucedida da senha
   useEffect(() => {
     if (passwordUpdated) {
-      const timer = setTimeout(() => navigate('/', { replace: true }), 1500)
+      const timer = setTimeout(() => navigate({ to: '/', replace: true }), 1500)
       return () => clearTimeout(timer)
     }
   }, [passwordUpdated, navigate])

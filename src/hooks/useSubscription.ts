@@ -6,12 +6,12 @@ import { useToast } from '@/hooks/use-toast'
 export interface SubscriptionPlan {
   id: string
   name: string
-  description: string
+  description: string | null
   price_cents: number
-  currency: string
-  interval_type: string
+  currency: string | null
+  interval_type: string | null
   features: any
-  is_active: boolean
+  is_active: boolean | null
 }
 
 export interface SubscriptionStatus {

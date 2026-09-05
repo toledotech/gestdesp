@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate } from '@tanstack/react-router'
 import { usePermissions } from '@/hooks/usePermissions'
 import { useEmpresas, Empresa, EmpresaUser, CriarEmpresaParams } from '@/hooks/useEmpresas'
 import { Button } from '@/components/ui/button'

@@ -6,21 +6,21 @@ import { PLANO_LIMITE_PROCESSOS } from '@/hooks/usePlanLimits'
 export interface Cliente {
   id: string
   nome: string
-  cpf_cnpj?: string
-  telefone?: string
-  email?: string
-  endereco?: string
+  cpf_cnpj?: string | null
+  telefone?: string | null
+  email?: string | null
+  endereco?: string | null
 }
 
 export interface Veiculo {
   id: string
-  cliente_id: string
+  cliente_id: string | null
   marca: string
   modelo: string
-  ano?: number
+  ano?: number | null
   placa: string
-  chassi?: string
-  renavam?: string
+  chassi?: string | null
+  renavam?: string | null
 }
 
 export type ServicoTipo = 'Transferência de Propriedade' | 'Licenciamento Anual' | '2ª Via CRV' | 'Comunicação de Venda' | 'ATPV (Intenção de Venda)' | 'IPVA' | 'Multas' | 'Outros'
@@ -29,24 +29,24 @@ export type ProcessoStatus = 'Recebido' | 'Em Conferência' | 'No DETRAN' | 'Agu
 export interface Processo {
   id: string
   numero_protocolo: string
-  numero_processo?: string
-  data_abertura?: string
+  numero_processo?: string | null
+  data_abertura?: string | null
   cliente_id: string
   veiculo_id: string
-  loja_id?: string
+  loja_id?: string | null
   servico: ServicoTipo
   status: ProcessoStatus
   valor: number
   valor_dut: number
   valor_boleto: number
-  prazo?: string
-  observacoes?: string
-  documentos_recebidos?: string[]
+  prazo?: string | null
+  observacoes?: string | null
+  documentos_recebidos?: string[] | null
   created_at: string
   updated_at: string
   cliente?: Cliente
   veiculo?: Veiculo
-  loja?: { id: string; nome: string }
+  loja?: { id: string; nome: string } | null
 }
 
 export type CreateProcessoData = {
@@ -216,7 +216,7 @@ export const useProcessos = () => {
           cliente_id: processoData.cliente_id,
           status: 'pendente',
           user_id: user.id,
-        }])
+        }] as any)
       }
 
       setProcessos(prev => [data, ...prev])
@@ -301,7 +301,7 @@ export const useProcessos = () => {
 
       const { data, error } = await supabase
         .from('clientes')
-        .insert([{ ...cliente, user_id: user.id }])
+        .insert([{ ...cliente, user_id: user.id }] as any)
         .select()
         .single()
 
@@ -331,7 +331,7 @@ export const useProcessos = () => {
 
       const { data, error } = await supabase
         .from('veiculos')
-        .insert([{ ...veiculo, user_id: user.id }])
+        .insert([{ ...veiculo, user_id: user.id }] as any)
         .select()
         .single()
 

@@ -34,7 +34,7 @@ export const VeiculoModal = ({ isOpen, onClose, onSave, veiculo, mode }: Veiculo
         placa: veiculo.placa,
         marca: veiculo.marca,
         modelo: veiculo.modelo,
-        ano: veiculo.ano,
+        ano: veiculo.ano ?? undefined,
         chassi: veiculo.chassi || '',
         renavam: veiculo.renavam || '',
         cliente_id: veiculo.cliente_id || undefined,

@@ -15,7 +15,7 @@ import {
   BookOpen,
   Building2
 } from "lucide-react"
-import { NavLink } from "react-router-dom"
+import { Link, useLocation } from "@tanstack/react-router"
 import { usePermissions } from "@/hooks/usePermissions"
 
 type MenuAccess = 'all' | 'admin' | 'super_admin'
@@ -55,6 +55,7 @@ export function AppSidebar() {
   const { state } = useSidebar()
   const isCollapsed = state === "collapsed"
   const { isAdmin, isSuperAdmin, isSuperMaster } = usePermissions()
+  const location = useLocation()
 
   // SuperMaster (sem empresa) vê apenas o Painel Admin
   const isSM = isSuperMaster()
@@ -76,35 +77,33 @@ export function AppSidebar() {
 
           <SidebarGroupContent className="mt-2">
             <SidebarMenu className="space-y-1">
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <NavLink
-                    to={item.url}
-                    end={item.url === '/'}
-                    className={({ isActive }) =>
-                      `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative w-full ${
+              {menuItems.map((item) => {
+                const isActive = item.url === '/'
+                  ? location.pathname === '/'
+                  : location.pathname.startsWith(item.url)
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <Link
+                      to={item.url}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative w-full ${
                         isActive
                           ? 'bg-white/15 text-cyan-300 shadow-md'
                           : 'text-blue-200 hover:bg-white/20 hover:text-cyan-300'
-                      }`
-                    }
-                  >
-                    {({ isActive }) => (
-                      <>
-                        <div className="p-1.5 shrink-0">
-                          <item.icon className="h-4 w-4 text-white" />
-                        </div>
-                        {!isCollapsed && (
-                          <span className="font-medium text-sm">{item.title}</span>
-                        )}
-                        {isActive && !isCollapsed && (
-                          <div className="absolute right-3 w-1 h-5 bg-white/70 rounded-full"></div>
-                        )}
-                      </>
-                    )}
-                  </NavLink>
-                </SidebarMenuItem>
-              ))}
+                      }`}
+                    >
+                      <div className="p-1.5 shrink-0">
+                        <item.icon className="h-4 w-4 text-white" />
+                      </div>
+                      {!isCollapsed && (
+                        <span className="font-medium text-sm">{item.title}</span>
+                      )}
+                      {isActive && !isCollapsed && (
+                        <div className="absolute right-3 w-1 h-5 bg-white/70 rounded-full"></div>
+                      )}
+                    </Link>
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
